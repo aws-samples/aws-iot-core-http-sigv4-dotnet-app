@@ -31,16 +31,21 @@ namespace aws_iot_http_sigv4_dotnet_app
         private static void PublishMessageToAWSIoT()
         {
             string jsonPayload = JsonHelper.GenerateRandomJsonPayload();
-
             var uri = new Uri("https://a2p1hwvv77f23d-ats.iot.us-east-1.amazonaws.com/topics/topic1?qos=1");
+            Dictionary<string, string> headers = BuildHeaders(uri, jsonPayload);
 
-            byte[] contentHash = AWS4SignerBase.CanonicalRequestHashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(jsonPayload));
+            HttpHelpers.InvokeHttpRequest(uri, "POST", headers, jsonPayload);
+        }
+
+        private static Dictionary<string, string> BuildHeaders(Uri uri, string payload) 
+        {
+            byte[] contentHash = AWS4SignerBase.CanonicalRequestHashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(payload));
             string contentHashString = AWS4SignerBase.ToHexString(contentHash, true);
 
             var headers = new Dictionary<string, string>
             {
                 {AWS4SignerBase.X_Amz_Content_SHA256, contentHashString},
-                {"content-length", jsonPayload.Length.ToString()},
+                {"content-length", payload.Length.ToString()},
                 {"content-type", "text/plain"}
             };
 
@@ -62,7 +67,7 @@ namespace aws_iot_http_sigv4_dotnet_app
             // express authorization for this as a header
             headers.Add("Authorization", authorization);
 
-            HttpHelpers.InvokeHttpRequest(uri, "POST", headers, jsonPayload);
+            return headers;
         }
     }
 }
