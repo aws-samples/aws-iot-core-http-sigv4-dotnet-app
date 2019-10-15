@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Web;
 using System.Net;
 using System.Threading;
-using System.IO;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using aws_iot_http_sigv4_dotnet_app.Utils;
+using System;
+using aws_iot_http_sigv4_dotnet_app.Signers;
+using AWSSignatureV4_S3_Sample.Util;
 
 namespace aws_iot_http_sigv4_dotnet_app
 {
@@ -20,65 +15,54 @@ namespace aws_iot_http_sigv4_dotnet_app
         {
             while (true)
             {
-                PublishMessageToAWSIot();
-                Thread.Sleep(5000);
+                try
+                {
+                    PublishMessageToAWSIoT();
+                    Thread.Sleep(5000);
+                }
+                catch (Exception e)
+                {
+                    // log the error and continue to publish
+                    Logger.LogError(e.Message);
+                }
             }
         }
 
-        static void PublishMessageToAWSIot()
+        private static void PublishMessageToAWSIoT()
         {
+            string jsonPayload = JsonHelper.GenerateRandomJsonPayload();
 
+            var uri = new Uri("https://a2p1hwvv77f23d-ats.iot.us-east-1.amazonaws.com/topics/topic1?qos=1");
 
-            var CaCert = X509Certificate.CreateFromCertFile(@"AmazonRootCA1.pem");
+            byte[] contentHash = AWS4SignerBase.CanonicalRequestHashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(jsonPayload));
+            string contentHashString = AWS4SignerBase.ToHexString(contentHash, true);
 
-
-            var CaCert2 = new X509Certificate2(CaCert);
-            string method = ConfigHelper.ReadSetting("method");
-            string requesturl = ConfigHelper.ReadSetting("requesturl");
-
-            string postData = JsonHelper.GetJsonPayload();
-
-
-            Dictionary<string, string> finalHeaders = Sigv4util.GetHttpHeaderForSigv4HttpPost(postData);
-            byte[] byteArray = Encoding.UTF8.GetBytes(postData);
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(requesturl);
-
-
-            request.Method = method;
-            request.ContentLength = byteArray.Length;
-            request.ContentType = ConfigHelper.ReadSetting("contenttype");
-            request.Headers.Add("Authorization", finalHeaders["Authorization"]);
-            request.Headers.Add("X-Amz-Date", finalHeaders["X-Amz-Date"]);
-
-
-            request.ClientCertificates.Add(CaCert2);
-
-
-
-            Stream dataStream = request.GetRequestStream();
-            dataStream.Write(byteArray, 0, byteArray.Length);
-            dataStream.Close();
-
-
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-            string responseString;
-            StreamReader responseReader = new StreamReader(response.GetResponseStream());
-
-            responseString = responseReader.ReadToEnd();
-
-            if (responseString.Contains("OK"))
+            var headers = new Dictionary<string, string>
             {
-                Logger.LogDebug("Sucessful" + responseString);
-            }
+                {AWS4SignerBase.X_Amz_Content_SHA256, contentHashString},
+                {"content-length", jsonPayload.Length.ToString()},
+                {"content-type", "text/plain"}
+            };
 
-            else
+            var uriWithoutQueryString = new Uri(uri.GetLeftPart(UriPartial.Path));
+            var signer = new AWS4SignerForAuthorizationHeader
             {
+                EndpointUri = uriWithoutQueryString,
+                HttpMethod = "POST",
+                Service = "iotdevicegateway",
+                Region = "us-east-1"
+            };
 
-                Logger.LogDebug("Not Sucessful" + responseString);
-            }
+            string AWSAccessKey = ConfigHelper.ReadSetting("accesskey");
+            string AWSSecretKey = ConfigHelper.ReadSetting("secretkey");
 
+            string queryStringWithoutLeadingQuestionMark = string.IsNullOrEmpty(uri.Query) ? string.Empty : uri.Query.Substring(1);
+            var authorization = signer.ComputeSignature(headers, queryStringWithoutLeadingQuestionMark, contentHashString, AWSAccessKey, AWSSecretKey);
+
+            // express authorization for this as a header
+            headers.Add("Authorization", authorization);
+
+            HttpHelpers.InvokeHttpRequest(uri, "POST", headers, jsonPayload);
         }
     }
 }

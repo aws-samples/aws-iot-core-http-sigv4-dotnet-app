@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
+﻿using System.Reflection;
 using System.IO;
 using log4net;
 using log4net.Config;
@@ -72,6 +67,5 @@ namespace aws_iot_http_sigv4_dotnet_app.Utils
             XmlConfigurator.Configure(logRepository, new FileInfo("log4net.config"));
             IsLog4netConfigured = true;
         }
-
     }
 }
