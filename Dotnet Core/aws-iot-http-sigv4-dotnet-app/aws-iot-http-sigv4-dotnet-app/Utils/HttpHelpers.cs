@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using aws_iot_http_sigv4_dotnet_app.Utils;
 
 namespace AWSSignatureV4_S3_Sample.Util
 {
@@ -50,7 +51,7 @@ namespace AWSSignatureV4_S3_Sample.Util
                     if (response != null)
                     {
                         var errorMsg = ReadResponseBody(response);
-                        Console.WriteLine("\n-- HTTP call failed with exception '{0}', status code '{1}'", errorMsg, response.StatusCode);
+                        Logger.LogError($"\n-- HTTP call failed with exception '{errorMsg}', status code '{response.StatusCode}'");
                     }
                 }
             }
@@ -94,16 +95,16 @@ namespace AWSSignatureV4_S3_Sample.Util
             {
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    Console.WriteLine("\n-- HTTP call succeeded");
+                    Logger.LogDebug("\n-- HTTP call succeeded");
                     var responseBody = ReadResponseBody(response);
                     if (!string.IsNullOrEmpty(responseBody))
                     {
-                        Console.WriteLine("\n-- Response body:");
-                        Console.WriteLine(responseBody);     
+                        Logger.LogDebug("\n-- Response body:");
+                        Logger.LogDebug(responseBody);     
                     }
                 }
                 else
-                    Console.WriteLine("\n-- HTTP call failed, status code: {0}", response.StatusCode);
+                    Logger.LogDebug($"\n-- HTTP call failed, status code: {response.StatusCode}");
 
                 return response;
             }

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using aws_iot_http_sigv4_dotnet_app.Utils;
 
 namespace aws_iot_http_sigv4_dotnet_app.Signers
 {
@@ -107,7 +108,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Signers
                                                        canonicalizedHeaderNames,
                                                        canonicalizedHeaders,
                                                        bodyHash);
-            Console.WriteLine("\nCanonicalRequest:\n{0}", canonicalRequest);
+            Logger.LogDebug($"\nCanonicalRequest:\n{canonicalRequest}");
 
             // generate a hash of the canonical request, to go into signature computation
             var canonicalRequestHashBytes
@@ -126,7 +127,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Signers
             stringToSign.AppendFormat("{0}-{1}\n{2}\n{3}\n", SCHEME, ALGORITHM, dateTimeStamp, scope);
             stringToSign.Append(ToHexString(canonicalRequestHashBytes, true));
 
-            Console.WriteLine("\nStringToSign:\n{0}", stringToSign);
+            Logger.LogDebug($"\nStringToSign:\n{stringToSign}");
 
             // compute the signing key
             var kha = KeyedHashAlgorithm.Create(HMACSHA256);
@@ -135,7 +136,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Signers
             // compute the AWS4 signature and return it
             var signature = kha.ComputeHash(Encoding.UTF8.GetBytes(stringToSign.ToString()));
             var signatureString = ToHexString(signature, true);
-            Console.WriteLine("\nSignature:\n{0}", signatureString);
+            Logger.LogDebug($"\nSignature:\n{signatureString}");
 
             var authString = new StringBuilder();
             authString.AppendFormat("{0}-{1} ", SCHEME, ALGORITHM);
@@ -144,7 +145,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Signers
             authString.AppendFormat("Signature={0}", signatureString);
 
             var authorization = authString.ToString();
-            Console.WriteLine("\nAuthorization:\n{0}", authorization);
+            Logger.LogDebug($"\nAuthorization:\n{authorization}");
 
             return authorization;
         }

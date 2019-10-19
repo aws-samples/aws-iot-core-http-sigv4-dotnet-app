@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using aws_iot_http_sigv4_dotnet_app.Utils;
 
 namespace aws_iot_http_sigv4_dotnet_app.Signers
 {
@@ -127,7 +128,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Signers
                                                        canonicalizedHeaderNames,
                                                        canonicalizedHeaders,
                                                        bodyHash);
-            Console.WriteLine("\nCanonicalRequest:\n{0}", canonicalRequest);
+            Logger.LogDebug($"\nCanonicalRequest:\n{canonicalRequest}");
 
             // generate a hash of the canonical request, to go into signature computation
             var canonicalRequestHashBytes 
@@ -146,7 +147,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Signers
             stringToSign.AppendFormat("{0}-{1}\n{2}\n{3}\n", SCHEME, ALGORITHM, DateTimeStamp, Scope);
             stringToSign.Append(ToHexString(canonicalRequestHashBytes, true));
 
-            Console.WriteLine("\nStringToSign:\n{0}", stringToSign);
+            Logger.LogDebug($"\nStringToSign:\n{stringToSign}");
 
             // compute the signing key
             SigningKey = DeriveSigningKey(HMACSHA256, awsSecretKey, Region, dateStamp, Service);
@@ -157,7 +158,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Signers
             // compute the AWS4 signature and return it
             var signature = kha.ComputeHash(Encoding.UTF8.GetBytes(stringToSign.ToString()));
             var signatureString = ToHexString(signature, true);
-            Console.WriteLine("\nSignature:\n{0}", signatureString);
+            Logger.LogDebug($"\nSignature:\n{signatureString}");
 
             // cache the computed signature ready for chunk 0 upload
             LastComputedSignature = signatureString;
@@ -169,7 +170,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Signers
             authString.AppendFormat("Signature={0}", signatureString);
 
             var authorization = authString.ToString();
-            Console.WriteLine("\nAuthorization:\n{0}", authorization);
+            Logger.LogDebug($"\nAuthorization:\n{authorization}");
 
             return authorization;
         }
@@ -202,7 +203,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Signers
                                        + (remainingBytes > 0 ? CalculateChunkHeaderLength(remainingBytes) : 0)
                                        + CalculateChunkHeaderLength(0);
 
-            Console.WriteLine("\nComputed chunked content length for original length {0} bytes, chunk size {1}KB is {2} bytes", originalLength, chunkSize/1024, chunkedContentLength);
+            Logger.LogDebug($"\nComputed chunked content length for original length {originalLength} bytes, chunk size {chunkSize/1024}KB is {chunkedContentLength} bytes");
             return chunkedContentLength;
         }
 
@@ -285,7 +286,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Signers
                     ToHexString(CanonicalRequestHashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(nonsigExtension)), true) + "\n" +
                     ToHexString(CanonicalRequestHashAlgorithm.ComputeHash(dataToChunk), true);
 
-            Console.WriteLine("\nChunkStringToSign:\n{0}", chunkStringToSign);
+            Logger.LogDebug($"\nChunkStringToSign:\n{chunkStringToSign}");
 
             // compute the V4 signature for the chunk
             var chunkSignature
@@ -294,7 +295,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Signers
                                                Encoding.UTF8.GetBytes(chunkStringToSign)),
                                      true);
 
-            Console.WriteLine("\nChunkSignature:\n{0}", chunkSignature);
+            Logger.LogDebug($"\nChunkSignature:\n{chunkSignature}");
 
             // cache the signature to include with the next chunk's signature computation
             this.LastComputedSignature = chunkSignature;
@@ -305,7 +306,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Signers
             chunkHeader.Append(nonsigExtension + CHUNK_SIGNATURE_HEADER + chunkSignature);
             chunkHeader.Append(CLRF);
 
-            Console.WriteLine("\nChunkHeader:\n{0}", chunkHeader);
+            Logger.LogDebug($"\nChunkHeader:\n{chunkHeader}");
 
             try
             {

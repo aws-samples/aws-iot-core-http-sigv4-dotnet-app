@@ -1,4 +1,5 @@
-﻿using AWSSignatureV4_S3_Sample.Util;
+﻿using aws_iot_http_sigv4_dotnet_app.Utils;
+using AWSSignatureV4_S3_Sample.Util;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -112,7 +113,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Signers
                                                        canonicalizedHeaderNames,
                                                        canonicalizedHeaders,
                                                        bodyHash);
-            Console.WriteLine("\nCanonicalRequest:\n{0}", canonicalRequest);
+            Logger.LogDebug($"\nCanonicalRequest:\n{canonicalRequest}");
 
             byte[] canonicalRequestHashBytes 
                 = CanonicalRequestHashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(canonicalRequest));
@@ -123,7 +124,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Signers
             stringToSign.AppendFormat("{0}-{1}\n{2}\n{3}\n", SCHEME, ALGORITHM, dateTimeStamp, scope);
             stringToSign.Append(ToHexString(canonicalRequestHashBytes, true));
 
-            Console.WriteLine("\nStringToSign:\n{0}", stringToSign);
+            Logger.LogDebug($"\nStringToSign:\n{stringToSign}");
 
             // compute the multi-stage signing key
             KeyedHashAlgorithm kha = KeyedHashAlgorithm.Create(HMACSHA256);
@@ -133,7 +134,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Signers
             // user to be embedded in the request as needed
             var signature = kha.ComputeHash(Encoding.UTF8.GetBytes(stringToSign.ToString()));
             var signatureString = ToHexString(signature, true);
-            Console.WriteLine("\nSignature:\n{0}", signatureString);
+            Logger.LogDebug($"\nSignature:\n{signatureString}");
 
             // form up the authorization parameters for the caller to place in the query string
             var authString = new StringBuilder();
@@ -155,7 +156,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Signers
             authString.AppendFormat("&{0}={1}", X_Amz_Signature, signatureString);
 
             var authorization = authString.ToString();
-            Console.WriteLine("\nAuthorization:\n{0}", authorization);
+            Logger.LogDebug($"\nAuthorization:\n{authorization}");
 
             return authorization;
         }

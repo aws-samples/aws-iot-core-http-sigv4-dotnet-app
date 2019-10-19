@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using System.Net;
 using System.Threading;
 using aws_iot_http_sigv4_dotnet_app.Utils;
 using System;
@@ -17,7 +16,10 @@ namespace aws_iot_http_sigv4_dotnet_app
             {
                 try
                 {
-                    PublishMessageToAWSIoT();
+                    string jsonPayload = JsonHelper.GenerateRandomJsonPayload();
+                    string topic = "mytopic";
+                    Console.WriteLine($"Publishing message {jsonPayload} to {topic}..");
+                    PublishMessageToTopic(jsonPayload, topic);
                     Thread.Sleep(5000);
                 }
                 catch (Exception e)
@@ -28,13 +30,12 @@ namespace aws_iot_http_sigv4_dotnet_app
             }
         }
 
-        private static void PublishMessageToAWSIoT()
+        private static void PublishMessageToTopic(string message, string topic)
         {
-            string jsonPayload = JsonHelper.GenerateRandomJsonPayload();
-            var uri = new Uri("https://a2p1hwvv77f23d-ats.iot.us-east-1.amazonaws.com/topics/topic1?qos=1");
-            Dictionary<string, string> headers = BuildHeaders(uri, jsonPayload);
+            var uri = new Uri($"https://youriotendpoint.iot.us-east-1.amazonaws.com/topics/{topic}?qos=1");
+            Dictionary<string, string> headers = BuildHeaders(uri, message);
 
-            HttpHelpers.InvokeHttpRequest(uri, "POST", headers, jsonPayload);
+            HttpHelpers.InvokeHttpRequest(uri, "POST", headers, message);
         }
 
         private static Dictionary<string, string> BuildHeaders(Uri uri, string payload) 
