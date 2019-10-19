@@ -64,7 +64,6 @@
     <Compile Include="Utils\HttpHelper.cs" />
     <Compile Include="Utils\JsonHelper.cs" />
     <Compile Include="Utils\Logger.cs" />
-    <Compile Include="Utils\Sigv4Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
