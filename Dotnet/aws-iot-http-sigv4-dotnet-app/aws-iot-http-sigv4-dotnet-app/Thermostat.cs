@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace aws_iot_http_sigv4_dotnet_app
+﻿namespace aws_iot_http_sigv4_dotnet_app
 {
     class Thermostat
     {
@@ -13,7 +7,5 @@ namespace aws_iot_http_sigv4_dotnet_app
         public int SetPoint { get; set; }
 
         public int CurrentTemperature { get; set; }
-
-
     }
 }
