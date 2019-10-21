@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using AWSSignatureV4_S3_Sample.Util;
+using aws_iot_http_sigv4_dotnet_app.Utils;
 
 namespace aws_iot_http_sigv4_dotnet_app.Signers
 {

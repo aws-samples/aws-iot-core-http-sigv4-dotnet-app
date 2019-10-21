@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using aws_iot_http_sigv4_dotnet_app.Utils;
-using System;
 using aws_iot_http_sigv4_dotnet_app.Signers;
-using AWSSignatureV4_S3_Sample.Util;
 
 namespace aws_iot_http_sigv4_dotnet_app
 {
