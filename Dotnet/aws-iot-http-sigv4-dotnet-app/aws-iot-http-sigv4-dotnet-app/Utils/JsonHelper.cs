@@ -17,6 +17,5 @@ namespace aws_iot_http_sigv4_dotnet_app.Utils
             thermostat.CurrentTemperature = r.Next(32, 100);
             return JsonConvert.SerializeObject(thermostat);
         }
-
     }
 }

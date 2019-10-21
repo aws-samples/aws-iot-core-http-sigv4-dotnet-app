@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
-using aws_iot_http_sigv4_dotnet_app.Utils;
 
-namespace aws_iot_http_sigv4_dotnet_app.utils
+namespace aws_iot_http_sigv4_dotnet_app.Utils
 {
     /// <summary>
     /// Various Http helper routines

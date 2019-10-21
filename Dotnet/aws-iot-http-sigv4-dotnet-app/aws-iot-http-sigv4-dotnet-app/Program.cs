@@ -1,18 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Web;
-using System.Net;
 using System.Threading;
-using System.IO;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using aws_iot_http_sigv4_dotnet_app.Utils;
 using aws_iot_http_sigv4_dotnet_app.Signers;
-using aws_iot_http_sigv4_dotnet_app.utils;
 
 namespace aws_iot_http_sigv4_dotnet_app
 {
