@@ -1,5 +1,4 @@
-﻿using aws_iot_http_sigv4_dotnet_app.utils;
-using aws_iot_http_sigv4_dotnet_app.Utils;
+﻿using aws_iot_http_sigv4_dotnet_app.Utils;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
