@@ -8,8 +8,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Utils
     {
         public static string ReadSetting(string key)
         {
-            string result = "NotFound";
-
+            string result;
             try
             {
                 var builder = new ConfigurationBuilder()
