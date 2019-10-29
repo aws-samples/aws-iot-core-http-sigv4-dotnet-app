@@ -31,7 +31,7 @@ namespace aws_iot_http_sigv4_dotnet_app
 
         private static void PublishMessageToTopic(string message, string topic)
         {
-            var uri = new Uri($"https://a2p1hwvv77f23d-ats.iot.us-east-1.amazonaws.com/topics/{topic}?qos=1");
+            var uri = new Uri($"https://<<your-iot-endpoint>>/topics/{topic}?qos=1");
             Dictionary<string, string> headers = BuildHeaders(uri, message);
 
             HttpHelpers.InvokeHttpRequest(uri, "POST", headers, message);
@@ -64,7 +64,6 @@ namespace aws_iot_http_sigv4_dotnet_app
             string queryStringWithoutLeadingQuestionMark = string.IsNullOrEmpty(uri.Query) ? string.Empty : uri.Query.Substring(1);
             var authorization = signer.ComputeSignature(headers, queryStringWithoutLeadingQuestionMark, contentHashString, AWSAccessKey, AWSSecretKey);
 
-            // express authorization for this as a header
             headers.Add("Authorization", authorization);
 
             return headers;
