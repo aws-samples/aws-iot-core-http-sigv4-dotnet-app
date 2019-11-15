@@ -16,7 +16,7 @@ More details are available here https://docs.aws.amazon.com/iot/latest/developer
 In this post, we'll cover the option #3 of leveraging HTTP protocol with AWS Sigv4 authentication for communicating with AWS IoT Core using .NET Framework and .NET Core. 
 
 # 2. AWS IoT .NET Framework application using HTTP and AWS Sigv4 authentication
-The following sub-sections 2a, 2b, and 2coffer guidance on creating a .NET Framework app that publishes messages to AWS IoT Core using HTTP and AWS Sigv4 authentication.
+The following sub-sections 2a, 2b, and 2c offer guidance on creating a .NET Framework app that publishes messages to AWS IoT Core using HTTP and AWS Sigv4 authentication.
 
 ## 2a. Development environment
 - Windows 10 with latest updates
@@ -27,7 +27,7 @@ The following sub-sections 2a, 2b, and 2coffer guidance on creating a .NET Frame
 
 Open the solution file located at 'Dotnet\aws-iot-http-sigv4-dotnet-app\aws-iot-http-sigv4-dotnet-app.sln' and navigate to the Program.cs class.
 
-Take a look at the PublishMessageToTopic method and change the URI variable to your AWS IoT custom endpoint.  Next, navigate to the App.config file and substitute your access key and secret key in the respective appsettings sections.  Note that these settings should not be checked in to source control.
+Take a look at the PublishMessageToTopic method and change the URI variable to your AWS IoT custom endpoint.  Next, navigate to the App.config file and substitute your access key and secret key in the respective appsettings sections.  Note that the access key and secret key should not be checked in to source control.
 
 Navigate back to the Program.cs class and we'll walk through this sample's behavior.  When this application is run, it enters an infinite loop that publishes a message to a topic every 5 seconds.  The topic is defined by the "topic" variable in the Main method.  The Main method then invokes the PublishMessageToTopic method with the JSON payload and the destination topic.
 
