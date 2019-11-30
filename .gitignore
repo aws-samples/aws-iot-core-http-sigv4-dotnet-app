@@ -1,0 +1,6 @@
+bin
+obj
+.DS_STORE
+.vs
+*.user
+packages

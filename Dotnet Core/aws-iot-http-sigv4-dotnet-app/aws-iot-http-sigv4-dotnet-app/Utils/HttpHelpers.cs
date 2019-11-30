@@ -29,7 +29,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Utils
 
                 if (!string.IsNullOrEmpty(requestBody))
                 {
-                    var buffer = new byte[8192]; // arbitrary buffer size      
+                    var buffer = new byte[8192]; // arbitrary buffer size                        
                     var requestStream = request.GetRequestStream();
                     using (var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(requestBody)))
                     {
@@ -99,7 +99,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Utils
                     if (!string.IsNullOrEmpty(responseBody))
                     {
                         Logger.LogDebug("\n-- Response body:");
-                        Logger.LogDebug(responseBody);
+                        Logger.LogDebug(responseBody);     
                     }
                 }
                 else
@@ -136,6 +136,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Utils
             }
             return responseBody;
         }
+
 
         /// <summary>
         /// Helper routine to url encode canonicalized header names and values for safe

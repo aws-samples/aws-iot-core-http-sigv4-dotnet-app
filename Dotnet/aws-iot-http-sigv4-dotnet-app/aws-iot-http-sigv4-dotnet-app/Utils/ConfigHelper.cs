@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Configuration;
+﻿using System.Configuration;
 
 namespace aws_iot_http_sigv4_dotnet_app.Utils
 {
@@ -11,7 +6,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Utils
     {
         public static string ReadSetting(string key)
         {
-            string result = "NotFound";
+            string result;
             try
             {
                 var appSettings = ConfigurationManager.AppSettings;
@@ -21,7 +16,7 @@ namespace aws_iot_http_sigv4_dotnet_app.Utils
             catch (ConfigurationErrorsException ex)
             {
                 Logger.LogError(ex.Message);
-
+                throw;
             }
 
             return result;

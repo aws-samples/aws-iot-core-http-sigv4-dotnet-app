@@ -1,9 +1,6 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.FileExtensions;
-using Microsoft.Extensions.Configuration.Json;
-
 
 namespace aws_iot_http_sigv4_dotnet_app.Utils
 {
@@ -11,28 +8,25 @@ namespace aws_iot_http_sigv4_dotnet_app.Utils
     {
         public static string ReadSetting(string key)
         {
-            string result = "NotFound";
-
+            string result;
             try
             {
-
-
                 var builder = new ConfigurationBuilder()
                     .SetBasePath(Directory.GetCurrentDirectory())
                     .AddJsonFile("appsettings.json");
 
                 IConfiguration config = new ConfigurationBuilder()
-              .AddJsonFile("appsettings.json", true, true)
-              .Build();
+                    .AddJsonFile("appsettings.json", true, true)
+                    .Build();
 
                 result = config[key];
-
             }
             catch (Exception ex)
             {
-
-                Logger.LogDebug(ex.Message);
+                Logger.LogError(ex.Message);
+                throw;
             }
+
             return result;
         }
     }
